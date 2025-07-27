@@ -1,45 +1,42 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import QuestionForm from "./QuestionForm";
 import QuestionList from "./QuestionList";
 
 function App() {
   const [questions, setQuestions] = useState([]);
 
-  // === FETCH (GET) ALL QUESTIONS ===
   useEffect(() => {
     fetch("http://localhost:4000/questions")
-      .then((res) => res.json())
+      .then((r) => r.json())
       .then((data) => setQuestions(data));
   }, []);
 
-  // === ADD NEW QUESTION (POST) ===
   function handleAddQuestion(newQuestion) {
-    setQuestions([...questions, newQuestion]);
+    setQuestions((prevQuestions) => [...prevQuestions, newQuestion]);
   }
 
-  // === DELETE QUESTION ===
   function handleDeleteQuestion(deletedId) {
-    setQuestions(questions.filter((q) => q.id !== deletedId));
+    const updatedQuestions = questions.filter((q) => q.id !== deletedId);
+    setQuestions(updatedQuestions);
   }
 
-  // === PATCH CORRECT INDEX ===
-  function handleUpdateCorrectIndex(updatedQuestion) {
-    const updatedList = questions.map((q) =>
+  function handleUpdateQuestion(updatedQuestion) {
+    const updatedQuestions = questions.map((q) =>
       q.id === updatedQuestion.id ? updatedQuestion : q
     );
-    setQuestions(updatedList);
+    setQuestions(updatedQuestions);
   }
 
   return (
-    <div>
-      <h1>Quiz Admin</h1>
+    <main>
+      <h1>QuizMaster Admin</h1>
       <QuestionForm onAddQuestion={handleAddQuestion} />
       <QuestionList
         questions={questions}
-        onDelete={handleDeleteQuestion}
-        onUpdateCorrectIndex={handleUpdateCorrectIndex}
+        onDeleteQuestion={handleDeleteQuestion}
+        onUpdateQuestion={handleUpdateQuestion}
       />
-    </div>
+    </main>
   );
 }
 
