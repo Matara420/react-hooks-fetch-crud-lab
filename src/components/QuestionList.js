@@ -1,20 +1,20 @@
+// src/components/QuestionList.js
 import React from "react";
 import QuestionItem from "./QuestionItem";
 
-function QuestionList({ questions, onDelete, onUpdate }) {
+// Receive onDeleteQuestion and onUpdateCorrectAnswer props
+function QuestionList({ questions, onDeleteQuestion, onUpdateCorrectAnswer }) {
   return (
     <section>
-      <h2>Questions</h2>
-      <ul>
-        {questions.map((q) => (
-          <QuestionItem
-            key={q.id}
-            question={q}
-            onDelete={onDelete}
-            onUpdate={onUpdate}
-          />
-        ))}
-      </ul>
+      <h1>Questions</h1>
+      {questions.map((question) => (
+        <QuestionItem
+          key={question.id} // Use question.id as key for efficient rendering
+          question={question}
+          onDeleteQuestion={onDeleteQuestion} // Pass delete handler to item
+          onUpdateCorrectAnswer={onUpdateCorrectAnswer} // Pass update handler to item
+        />
+      ))}
     </section>
   );
 }

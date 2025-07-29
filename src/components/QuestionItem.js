@@ -1,50 +1,30 @@
+// src/components/QuestionItem.js
 import React from "react";
 
-function QuestionItem({ question, onDelete, onUpdate }) {
+// Receive question, onDeleteQuestion, and onUpdateCorrectAnswer props
+function QuestionItem({ question, onDeleteQuestion, onUpdateCorrectAnswer }) {
   const { id, prompt, answers, correctIndex } = question;
 
+  // Handle delete button click
   function handleDeleteClick() {
-    fetch(`http://localhost:4000/questions/${id}`, {
-      method: "DELETE",
-    }).then(() => onDelete(id));
+    onDeleteQuestion(id); // Call the delete handler passed from App.js with the question's ID
   }
 
-  function handleCorrectAnswerChange(e) {
-    const newIndex = parseInt(e.target.value);
-    fetch(`http://localhost:4000/questions/${id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ correctIndex: newIndex }),
-    })
-      .then((r) => r.json())
-      .then((updatedQuestion) => onUpdate(updatedQuestion));
+  // Handle dropdown change for correct answer
+  function handleCorrectIndexChange(e) {
+    const newCorrectIndex = parseInt(e.target.value);
+    onUpdateCorrectAnswer(id, newCorrectIndex); // Call update handler with ID and new index
   }
 
   return (
-    <li>
-      <h4>{prompt}</h4>
-      <ul>
-        {answers.map((answer, index) => (
-          <li
-            key={index}
-            style={{ fontWeight: index === correctIndex ? "bold" : "normal" }}
-          >
-            {answer}
-          </li>
-        ))}
-      </ul>
+    <li className="card">
+      <h5>{prompt}</h5>
       <label>
         Correct Answer:
-        <select
-          value={correctIndex}
-          onChange={handleCorrectAnswerChange}
-          aria-label="Correct Answer"
-        >
-          {answers.map((_, index) => (
+        <select defaultValue={correctIndex} onChange={handleCorrectIndexChange}>
+          {answers.map((answer, index) => (
             <option key={index} value={index}>
-              {index + 1}
+              {answer}
             </option>
           ))}
         </select>

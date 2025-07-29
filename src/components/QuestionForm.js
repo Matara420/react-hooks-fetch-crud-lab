@@ -1,73 +1,110 @@
+// src/components/QuestionForm.js
 import React, { useState } from "react";
 
 function QuestionForm({ onAddQuestion }) {
-  const [formData, setFormData] = useState({
-    prompt: "",
-    answers: ["", "", "", ""],
-    correctIndex: 0,
-  });
+  const [prompt, setPrompt] = useState("");
+  const [answer1, setAnswer1] = useState("");
+  const [answer2, setAnswer2] = useState("");
+  const [answer3, setAnswer3] = useState("");
+  const [answer4, setAnswer4] = useState("");
+  const [correctIndex, setCorrectIndex] = useState(0);
 
-  function handleChange(e) {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  }
-
-  function handleAnswerChange(index, value) {
-    const newAnswers = [...formData.answers];
-    newAnswers[index] = value;
-    setFormData({ ...formData, answers: newAnswers });
-  }
-
-  function handleSubmit(e) {
+  const handleSubmit = (e) => {
     e.preventDefault();
+
+    const newQuestion = {
+      prompt: prompt,
+      answers: [answer1, answer2, answer3, answer4],
+      correctIndex: parseInt(correctIndex), // Ensure correctIndex is an integer
+    };
+
     fetch("http://localhost:4000/questions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify(newQuestion),
     })
       .then((r) => r.json())
-      .then((newQ) => onAddQuestion(newQ));
-  }
+      .then((data) => {
+        // Call the callback function from App.js to add the new question to state
+        onAddQuestion(data);
+        // Clear the form fields after successful submission
+        setPrompt("");
+        setAnswer1("");
+        setAnswer2("");
+        setAnswer3("");
+        setAnswer4("");
+        setCorrectIndex(0);
+      })
+      .catch((error) => {
+        console.error("Error adding question:", error);
+      });
+  };
 
   return (
     <section>
-      <h2>New Question</h2>
+      <h1>New Question</h1>
       <form onSubmit={handleSubmit}>
         <label>
           Prompt:
           <input
             type="text"
             name="prompt"
-            value={formData.prompt}
-            onChange={handleChange}
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
           />
         </label>
-        {formData.answers.map((ans, i) => (
-          <label key={i}>
-            Answer {i + 1}:
-            <input
-              type="text"
-              value={ans}
-              onChange={(e) => handleAnswerChange(i, e.target.value)}
-            />
-          </label>
-        ))}
+        <label>
+          Answer 1:
+          <input
+            type="text"
+            name="answer1"
+            value={answer1}
+            onChange={(e) => setAnswer1(e.target.value)}
+          />
+        </label>
+        <label>
+          Answer 2:
+          <input
+            type="text"
+            name="answer2"
+            value={answer2}
+            onChange={(e) => setAnswer2(e.target.value)}
+          />
+        </label>
+        <label>
+          Answer 3:
+          <input
+            type="text"
+            name="answer3"
+            value={answer3}
+            onChange={(e) => setAnswer3(e.target.value)}
+          />
+        </label>
+        <label>
+          Answer 4:
+          <input
+            type="text"
+            name="answer4"
+            value={answer4}
+            onChange={(e) => setAnswer4(e.target.value)}
+          />
+        </label>
         <label>
           Correct Answer:
           <select
             name="correctIndex"
-            value={formData.correctIndex}
-            onChange={handleChange}
+            value={correctIndex}
+            onChange={(e) => setCorrectIndex(e.target.value)}
           >
-            {[0, 1, 2, 3].map((i) => (
-              <option key={i} value={i}>
-                {i + 1}
-              </option>
-            ))}
+            <option value="0">Answer 1</option>
+            <option value="1">Answer 2</option>
+            <option value="2">Answer 3</option>
+            <option value="3">Answer 4</option>
           </select>
         </label>
-        <button type="submit">Submit Question</button>
+        <button type="submit">Add Question</button>
       </form>
     </section>
   );
